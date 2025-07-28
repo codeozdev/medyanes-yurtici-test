@@ -1,5 +1,5 @@
 ﻿import { NextResponse } from 'next/server';
-import { createSoapClient, soapConfig, SHIPPING_WSDL } from '../utils/soapClient';
+import { createSoapClient, soapConfig, SHIPPING_WSDL } from '../utils/cargoCreate';
 
 export async function POST(req) {
     try {

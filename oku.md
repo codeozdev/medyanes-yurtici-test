@@ -185,3 +185,4 @@ Doğru kurgulandığında hem geliştirici hem operasyon ekibi için **%100 otom
 ---
 
 Hazır PDF veya HTML dökümana dönüştürmek istersen, sadece belirtmen yeterli.
+

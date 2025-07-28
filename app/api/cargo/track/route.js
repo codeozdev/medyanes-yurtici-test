@@ -1,5 +1,6 @@
-﻿import { NextResponse } from 'next/server';
-import { trackShipment } from '@/app/api/utils/soapClient';
+﻿// app/api/cargo/track/route.js
+import { NextResponse } from 'next/server';
+import { trackShipment } from '../../utils/cargoTrack';
 
 export async function GET(req) {
     try {
