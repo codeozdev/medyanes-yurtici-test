@@ -8,7 +8,7 @@ export const soapConfig = {
     language: 'TR'
 };
 
-export const trackShipment = async (orderNo) => {
+export const trackShipment = async (cargoKey) => {
     const soapEnvelope = `
             <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                       xmlns:tns="http://yurticikargo.com.tr/sswIntegrationServices">
@@ -18,9 +18,9 @@ export const trackShipment = async (orderNo) => {
              <userName>${soapConfig.username}</userName>
              <password>${soapConfig.password}</password>
              <language>${soapConfig.language}</language>
-             <fieldName>53</fieldName>
+             <fieldName>14</fieldName>
              <fieldValueArray>
-                <item>${orderNo}</item>
+                <item>${cargoKey}</item>
              </fieldValueArray>
           </tns:listInvDocumentInterfaceByReference>
         </soapenv:Body>
@@ -28,7 +28,7 @@ export const trackShipment = async (orderNo) => {
 
     try {
         const response = await axios.post(
-            'https://testws.yurticikargo.com/KOPSWebServices/WsReportWithReferenceServices',
+            TRACKING_WSDL,
             soapEnvelope,
             {
                 headers: {
@@ -40,7 +40,16 @@ export const trackShipment = async (orderNo) => {
         );
 
         console.log('SOAP yanıtı:', response.data);
-        return response.data;
+
+        // Yanıttan docCargoId değerini çıkarmak için
+        const docCargoIdMatch = response.data.match(/<docCargoId>(.*?)<\/docCargoId>/);
+        const docCargoId = docCargoIdMatch ? docCargoIdMatch[1] : null;
+
+        return {
+            rawResponse: response.data,
+            docCargoId: docCargoId,
+            success: !response.data.includes('<errorCode>')
+        };
     } catch (error) {
         const errorDetail = error.response?.data || error.message;
         console.error('SOAP takip isteği detaylı hata:', errorDetail);

@@ -2,30 +2,21 @@
 import { NextResponse } from 'next/server';
 import { trackShipment } from '../../utils/cargoTrack';
 
-export async function GET(req) {
+export async function POST(req) {
     try {
-        const { searchParams } = new URL(req.url);
-        const orderNo = searchParams.get('orderNo');
+        const body = await req.json();
+        const { cargoKey } = body;
 
-        if (!orderNo) {
+        if (!cargoKey) {
             return NextResponse.json(
-                { error: 'Sipariş numarası gerekli' },
+                { error: 'cargoKey parametresi gereklidir' },
                 { status: 400 }
             );
         }
 
-        const result = await trackShipment(orderNo);
+        const trackingResult = await trackShipment(cargoKey);
 
-        const response = {
-            success: result.includes('SUCCESS') || result.includes('<return>0</return>'),
-            orderNo: orderNo,
-            status: result.match(/<shipmentStatus>(.*?)<\/shipmentStatus>/)?.[1] || 'Durum bilgisi bulunamadı',
-            details: result,
-            trackingUrl: `https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code=${orderNo}`
-        };
-
-        return NextResponse.json(response);
-
+        return NextResponse.json(trackingResult);
     } catch (error) {
         console.error("Kargo takip hatası:", error);
         return NextResponse.json(
